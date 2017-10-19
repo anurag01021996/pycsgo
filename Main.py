@@ -287,8 +287,8 @@ def RCS(process, client, clientState):
 def noFlash(process, client, clientState):
     global end
     global csgoWindow
-localPlayer = Address((clientDLL + dwLocalPlayer), process).read() #checks for localplayer
-flashDur = Address((clientDLL + m_fFlashDuration), process).read() #checks if flashed
+localPlayer = Address((int(clientDLL) + dwLocalPlayer), process).read() #checks for localplayer
+flashDur = Address((int(clientDLL) + m_fFlashDuration), process).read() #checks if flashed
 
 if flashDur != 0: #if flashed
     sleep(0.01) #sleep cause external memes = lag
