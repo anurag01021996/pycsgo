@@ -161,7 +161,7 @@ def main():
 
 
 	#TRIGGERBOT#
-	def triggerBot(process, client, clientState): #triggerbot define
+	def triggerBot(processHandle, client, clientState): #triggerbot define
 	    global end
 	    global csgoWindow
 	    while not end:
@@ -169,29 +169,29 @@ def main():
 	        if not win32gui.GetForegroundWindow(): #checks if window is there
 	            continue
 	        if win32gui.GetForegroundWindow(csgowindow): #grab csgo window
-	            if Address((clientState + dwClientState_GetLocalPlayer), process).read('int') == 6: #check if in game
-	                localplayer = Address((client + dwLocalPlayer), process).read() #looks for localplayer
-	                localTeam = Address((client + m_iTeamNum), process).read('int') #looks for player's team
+	            if Address((clientState + dwClientState_GetLocalPlayer), processHandle).read('int') == 6: #check if in game
+	                localplayer = Address((client + dwLocalPlayer), processHandle).read() #looks for localplayer
+	                localTeam = Address((client + m_iTeamNum), processHandle).read('int') #looks for player's team
 
-	            grabCrosshair = Address((client + m_iCrosshairID), process).read('int') #checks if entity in crosshair
+	            grabCrosshair = Address((client + m_iCrosshairID), processHandle).read('int') #checks if entity in crosshair
 	            if grabCrosshair == 0:
 	                continue
 
-	            entityCross = Address(((client + dwEntityList + (grabCrosshair - 1) * 0x10)), process).read() #get the entity
-	            entityTeamCross = Address((client + m_iTeamNum), process).read('int') #get the entity's team
+	            entityCross = Address(((client + dwEntityList + (grabCrosshair - 1) * 0x10)), processHandle).read() #get the entity
+	            entityTeamCross = Address((client + m_iTeamNum), processHandle).read('int') #get the entity's team
 
 	            if entityTeamCross != 2 and entityTeamCross != 3: #check the team
 	                continue
 
-	            crossDormant = Address((entityCross + m_bDormant), process).read('int') #check if player in crosshair is dormant
+	            crossDormant = Address((entityCross + m_bDormant), processHandle).read('int') #check if player in crosshair is dormant
 
 	            if win32api.GetAsyncKeyState(triggerBotKey) and localTeam != entityTeamCross and crossDormant == 0: #check if user is holding trigkey
 	                sleep((triggerBotDelay + random.randint(0,50)) / 1000.0) #random delay
 	                while grabCrosshair != 0 and win32api.GetAsyncKeyState(triggerBotKey): #if entity in crosshair and and holding down trigkey
-	                    grabCrosshair = Address((dwLocalPlayer + m_iCrosshairID), process).read('int')#check again for entity
-	                    Address((client + dwForceAttack), process).write(5, 'int')#shoot
+	                    grabCrosshair = Address((dwLocalPlayer + m_iCrosshairID), processHandle).read('int')#check again for entity
+	                    Address((client + dwForceAttack), processHandle).write(5, 'int')#shoot
 	                    sleep(0.10)#sleep cause external = lag
-	                    Address((client + dwForceAttack), process).write(4, 'int')#stop shooting
+	                    Address((client + dwForceAttack), processHandle).write(4, 'int')#stop shooting
 
 	#Normalize Angles
 	def normalizeAngles(angleX, angleY): #define angles
@@ -207,51 +207,51 @@ def main():
 	    return angleX, angleY
 
 	#walls u nerd
-	def glowESP(process, client): #define glowesp
-	    glowBase = Address((client + dwLocalPlayer), process).read() #grab localplayer
-	    glowESPpointer = Address((client + dwGlowObjectManager), process).read() #grab glow esp pointer 
-	    localTeam = Address((client + m_iTeamNum), process).read('int')#grab localplayer team
+	def glowESP(processHandle, client): #define glowesp
+	    glowBase = Address((client + dwLocalPlayer), processHandle).read() #grab localplayer
+	    glowESPpointer = Address((client + dwGlowObjectManager), processHandle).read() #grab glow esp pointer 
+	    localTeam = Address((client + m_iTeamNum), processHandle).read('int')#grab localplayer team
 
-	    playerCount = Address((client + m_iGlowIndex + 0x4), process).read('int')
+	    playerCount = Address((client + m_iGlowIndex + 0x4), processHandle).read('int')
 	    for x in range(1, playerCount): #for loop to grab all players to draw glow on
-	        glowCurPlayer = Address((client + dwEntityList + ((x - 1) * 0x10)), process).read()#grab current entities based on x
+	        glowCurPlayer = Address((client + dwEntityList + ((x - 1) * 0x10)), processHandle).read()#grab current entities based on x
 
 
 	        if glowCurPlayer == 0x0: #checks if entity is invalid and gay as FUCK
 	            break #break the loop when found all players
 
-	        glowCurPlayerDorm = Address((glowCurPlayer + m_bDormant), process)('int') #check if current player is dormant or not
-	        glowCurPlayerGlowIndex = Address((glowCurPlayer + m_iGlowIndex), process).read('int') #grab glow index of glowcurplayer entity
-	        entBaseTeamID = Address((glowCurPlayer + m_iTeamNum), process).read('int') #grab team of glowcurplayer entity
+	        glowCurPlayerDorm = Address((glowCurPlayer + m_bDormant), processHandle)('int') #check if current player is dormant or not
+	        glowCurPlayerGlowIndex = Address((glowCurPlayer + m_iGlowIndex), processHandle).read('int') #grab glow index of glowcurplayer entity
+	        entBaseTeamID = Address((glowCurPlayer + m_iTeamNum), processHandle).read('int') #grab team of glowcurplayer entity
 
 	        if entBaseTeamID == 0 or glowCurPlayerDorm != 0: #check if glowcurplayer ent is on irrelevant team or if player is dormant
 	            continue #continues for loop
 	        else:
 	            if localTeam != entBaseTeamID:
-	                Address((glowCurPlayer + m_bSpotted), process).write(1, 'int')
+	                Address((glowCurPlayer + m_bSpotted), processHandle).write(1, 'int')
 
 	        #here we go time to draw the glow!!!
 	            if entBaseTeamID == 2: #terrorist glow
-	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x4)), process).write(1.0, 'float')  
-	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x8)), process).write(0.0, 'float')
-	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0xC)), process).write(0.0, 'float') 
-	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x10)), process).write(1.0, 'float')
-	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x24)), process).write(1, 'int')
-	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x25)), process).write(0, 'int')   
+	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x4)), processHandle).write(1.0, 'float')  
+	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x8)), processHandle).write(0.0, 'float')
+	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0xC)), processHandle).write(0.0, 'float') 
+	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x10)), processHandle).write(1.0, 'float')
+	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x24)), processHandle).write(1, 'int')
+	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x25)), processHandle).write(0, 'int')   
 	            elif entBaseTeamID == 3: #ct glow
-	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x4)), process).write(0.0, 'float')  
-	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x8)), process).write(0.0, 'float')
-	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0xC)), process).write(1.0, 'float') 
-	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x10)), process).write(1.0, 'float')
-	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x24)), process).write(1, 'int')
-	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x25)), process).write(0, 'int') 
+	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x4)), processHandle).write(0.0, 'float')  
+	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x8)), processHandle).write(0.0, 'float')
+	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0xC)), processHandle).write(1.0, 'float') 
+	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x10)), processHandle).write(1.0, 'float')
+	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x24)), processHandle).write(1, 'int')
+	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x25)), processHandle).write(0, 'int') 
 	            else:
-	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x4)), process).write(0.0, 'float')  
-	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x8)), process).write(1.0, 'float')
-	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0xC)), process).write(0.0, 'float') 
-	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x10)), process).write(1.0, 'float')
-	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x24)), process).write(1, 'int')
-	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x25)), process).write(0, 'int') 
+	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x4)), processHandle).write(0.0, 'float')  
+	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x8)), processHandle).write(1.0, 'float')
+	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0xC)), processHandle).write(0.0, 'float') 
+	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x10)), processHandle).write(1.0, 'float')
+	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x24)), processHandle).write(1, 'int')
+	                Address((glowESPPointer + ((glowCurPlayerGlowIndex * 0x38) + 0x25)), processHandle).write(0, 'int') 
 
 	#FUCKING FINALLY DONE WITH THE GLOW
 	def bhop(process, client, localPlayer, clientState):
@@ -259,37 +259,37 @@ def main():
 	    global csgoWindow
 
 	    while not end:
-	        if win32gui.GetForegroundWindow() == csgoWindow and Address((clientState + dwClientState), process).read('int') == 6:#is localplayer in game???????????
+	        if win32gui.GetForegroundWindow() == csgoWindow and Address((clientState + dwClientState), processHandle).read('int') == 6:#is localplayer in game???????????
 
-	            flags = Address((localPlayer + m_fFlags), process).read()#grab the uhhh client flags
+	            flags = Address((localPlayer + m_fFlags), processHandle).read()#grab the uhhh client flags
 	            if flags & (1 << 0) and win32api.GetasyncKeyState(0x20): #is localplayer on the ground and holding space???????
-	                Address((client + dwForceJump), process).write(6, 'int') #jump!
-	            flags = Address((localPlayer + m_fFlags), process).read()#grab those flags again
+	                Address((client + dwForceJump), processHandle).write(6, 'int') #jump!
+	            flags = Address((localPlayer + m_fFlags), processHandle).read()#grab those flags again
 	        sleep(0.01)
 
 	#recoil control#
-	def RCS(process, client, clientState):
+	def RCS(processHandle, client, clientState):
 	    oldPunchX = 0 #storing aimpunchx
 	    oldPunchY = 0 #storing aimpunchy
 	    global RCSPercent #how much RCS do u want vrother?
 
 	    while True:
-	        if win32gui.GetForegroundWindow() == csgoWindow and Address((clientState + dwClientState), process).read('int') == 6: #are we playing? or is it all an illusion
-	            localPlayer = Address((client + dwLocalPlayer), process).read() #grab the localplayer
-	            if Address((localPlayer + m_iShotsFired), process).read('int') > 1: #have u fired more than 1 shot????
-	                angleX = Address((clientState + dwClientState_ViewAngles), process).read('float') #grab x
-	                angleY = Address((clientState + dwClientState_ViewAngles + 0x4), process).read('float') #grab y
+	        if win32gui.GetForegroundWindow() == csgoWindow and Address((clientState + dwClientState), processHandle).read('int') == 6: #are we playing? or is it all an illusion
+	            localPlayer = Address((client + dwLocalPlayer), processHandle).read() #grab the localplayer
+	            if Address((localPlayer + m_iShotsFired), processHandle).read('int') > 1: #have u fired more than 1 shot????
+	                angleX = Address((clientState + dwClientState_ViewAngles), processHandle).read('float') #grab x
+	                angleY = Address((clientState + dwClientState_ViewAngles + 0x4), processHandle).read('float') #grab y
 
-	                punchX = Address((localPlayer + m_aimPunchAngle), process).read('float') # get x punch
-	                punchY = Address((localPlayer + m_aimPunchAngle + 0x4), process).read('float') # get y punch
+	                punchX = Address((localPlayer + m_aimPunchAngle), processHandle).read('float') # get x punch
+	                punchY = Address((localPlayer + m_aimPunchAngle + 0x4), processHandle).read('float') # get y punch
 
 	                angleX -= (punchX - oldPunchX) * (RCSPercent * 0.02) #subtract punch from angle
 	                angleY -= (punchY - oldPunchY) * (RCSPercent * 0.02) #subtract punch from angle
 
 	                angleX, angleY = normalizeAngles(angleX, angleY) #normalize view angles
 
-	                Address((clientState + dwClientState_ViewAngles), process).write(angleX, 'float') #write recoil x
-	                Address((clientState + dwClientState_ViewAngles + 0x4), process).write(angleY, 'float') #write recoil y
+	                Address((clientState + dwClientState_ViewAngles), processHandle).write(angleX, 'float') #write recoil x
+	                Address((clientState + dwClientState_ViewAngles + 0x4), processHandle).write(angleY, 'float') #write recoil y
 
 	                oldPunchX = punchX
 	                oldPunchY = punchY
@@ -300,16 +300,16 @@ def main():
 	            
 	#aaa i can see now!#
 	               
-	def noFlash(process, client, clientState):
+	def noFlash(processHandle, client, clientState):
 	    global end
 	    global csgoWindow
 
-	localPlayer = Address((client + dwLocalPlayer), process).read() #checks for localplayer
-	flashDur = Address((client + m_fFlashDuration), process).read() #checks if flashed
+	localPlayer = Address((client + dwLocalPlayer), processHandle).read() #checks for localplayer
+	flashDur = Address((client + m_fFlashDuration), processHandle).read() #checks if flashed
 
 	if flashDur != 0: #if flashed
 	    sleep(0.01) #sleep cause external memes = lag
-	    flashAlpha = Address((client + m_fFlashMaxAlpha), process).write(float(0.0)) #set flash alpha to 0
+	    flashAlpha = Address((client + m_fFlashMaxAlpha), processHandle).write(float(0.0)) #set flash alpha to 0
 
 
 
