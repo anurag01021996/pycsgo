@@ -37,6 +37,8 @@ m_aimPunchAngle = 0x301C
 m_fFlags = 0x100
 m_vecOrigin = 0x134
 m_iShotsFired = 0xA2C0
+m_flFlashMaxAlpha = 0xA2F4
+m_flFlashDuration = 0xA2F8
  
 dwEntityList = 0x4A8D05C
 dwClientState_GetLocalPlayer = 0x178
@@ -55,6 +57,7 @@ triggerBotEnable = True
 BHOPEnable = True
 soundESPEnable = True
 rcsEnable = True
+noFlashEnable = True
 #OPTIONS END#
 
 #OPTION VALUES#
@@ -175,7 +178,7 @@ def bhop(process, client, localPlayer, clientState):
             flags = Address((localPlayer + m_fFlags), process).read()#grab those flags again
         sleep(0.01)
 
-
+#recoil control#
 def RCS(process, client, clientState):
     oldPunchX = 0 #storing aimpunchx
     oldPunchY = 0 #storing aimpunchy
@@ -205,6 +208,19 @@ def RCS(process, client, clientState):
                 oldPunchX = 0
                 oldPunchY = 0
             sleep(0.01)
+            
+#aaa i can see now!#
+
+def noFlash(process, client, clientState):
+    global end
+    global csgoWindow
+localPlayer = Address((client + dwLocalPlayer), process).read() #checks for localplayer
+flashDur = Address((client + m_fFlashDuration), process).read() #checks if flashed
+
+if flashDur != 0: #if flashed
+    sleep(0.01) #sleep cause external memes = lag
+    flashAlpha = Address((client + m_fFlashMaxAlpha), process).write(0.0f, 'float') #set flash alpha to 0
+
                 
 def getDLL(name, PID):
     hhModule = CreateToolhelp32Snapshot(TH32CS_CLASS.SNAPMODULE, PID)
@@ -231,6 +247,7 @@ def main():
     global end
     global csgoWindow
     global RCSEnable
+    global noFlashEnable
 
     processHandle = Process(name="csgo") #find csgo.exe
     if not processHandle: #uh oh bad handle
@@ -274,6 +291,12 @@ def main():
                 thread.start_new_thread(RCS, (processHandle, client, clientState,)) #start rcs function
             except:
                 print("uh oh couldn't start rcs thread((")
+        
+        if noFlashEnable:
+            try:
+                thread.start_new_thread(noFlash, (processHandle, client, clientState,)) #start noFlash
+               except:
+                print("uh oh couldn't start noflash thread((")
         
         while not win32api.GetAsyncKeyState(0x23):
             if Address((clientState + dwClientState), processHandle).read('int') == 6:
