@@ -9,8 +9,6 @@ import math
 import winsound
 from time import sleep
 
-clientDLL = None
-
 #main stuff now to start threads and does glow shit and etc. men)))
 def main():
     global triggerBotEnable
@@ -28,7 +26,7 @@ def main():
         exit(1)
 
     print("found csgo, grabbing modules")
-    clientDLL = getDLL("client.dll", processHandle.pid) #gets client.dll
+    client = getDLL("client.dll", processHandle.pid) #gets client.dll
     print("oh yeah yeah got client.dll")
 
     engine = getDLL("engine.dll", processHandle.pid)
@@ -288,9 +286,8 @@ def noFlash(process, client, clientState):
     global end
     global csgoWindow
 
-print clientDLL
-localPlayer = Address((int(clientDLL) + dwLocalPlayer), process).read() #checks for localplayer
-flashDur = Address((int(clientDLL) + m_fFlashDuration), process).read() #checks if flashed
+localPlayer = Address((getDLL("client.dll", processHandle.pid) + dwLocalPlayer), process).read() #checks for localplayer
+flashDur = Address((getDLL("client.dll", processHandle.pid) + m_fFlashDuration), process).read() #checks if flashed
 
 if flashDur != 0: #if flashed
     sleep(0.01) #sleep cause external memes = lag
