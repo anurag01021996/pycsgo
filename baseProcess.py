@@ -158,9 +158,10 @@ def hex_dump(data, addr = 0, prefix = '', ftype = 'bytes'):
  
     return dump + '\n'
  
- junk()
- junk()
- junk()
+junk()
+junk()
+junk()
+
 class ProcessException(Exception):
     junk()
     pass
