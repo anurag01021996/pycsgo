@@ -104,7 +104,6 @@ def main():
         exit(1)
 
     def bhop(process, client, localPlayer, clientState):
-    	fd
 	  	global end
 	  	global csgoWindow
 
