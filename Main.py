@@ -105,7 +105,7 @@ def main():
 
     if triggerBotEnable:
         try:
-            thread.start_new_thread(triggerBot, (processHandle, client, clientState, )) #start trigger function
+            thread.start_new_thread(triggerBot, (processHandle, client, clientState)) #start trigger function
 
         except:
             print("uh oh couldn't start trigger thread((")
