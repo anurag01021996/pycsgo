@@ -299,7 +299,8 @@ def main():
 	            sleep(0.01)
 	            
 	#aaa i can see now!#
-	      """         
+
+"""         
 	def noFlash(processHandle, client, clientState):
 	    global end
 	    global csgoWindow
