@@ -123,8 +123,8 @@ def hex_dump(data, addr = 0, prefix = '', ftype = 'bytes'):
                 junk()
                 dump += '{:<15} '.format(tmpval)
             addr += structlen
-    junk()
     else:
+        junk()
         for byte in data:
             junk()
             if addr % 16 == 0:
