@@ -41,7 +41,7 @@ def main():
 	triggerBotEnable = True
 	BHOPEnable = True
 	soundESPEnable = True
-	rcsEnable = True
+	RCSEnable= True
 	noFlashEnable = True
 	#OPTIONS END#
 
@@ -55,7 +55,7 @@ def main():
 	processFound = False
 	end = False
 	csgoWindow = None
-	
+
     global triggerBotEnable
     global BHOPEnable
     global glowESPEnable
