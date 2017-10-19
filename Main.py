@@ -299,7 +299,7 @@ def main():
 	            sleep(0.01)
 	            
 	#aaa i can see now!#
-	               
+	      """         
 	def noFlash(processHandle, client, clientState):
 	    global end
 	    global csgoWindow
@@ -311,7 +311,7 @@ def main():
 	    sleep(0.01) #sleep cause external memes = lag
 	    flashAlpha = Address((client + m_fFlashMaxAlpha), processHandle).write(float(0.0)) #set flash alpha to 0
 
-
+"""
 
 if __name__ == "__main__":
     main()
