@@ -9,6 +9,76 @@ import math
 import winsound
 from time import sleep
 
+#main stuff now to start threads and does glow shit and etc. men)))
+def main():
+    global triggerBotEnable
+    global BHOPEnable
+    global glowESPEnable
+    global soundESPEnable
+    global end
+    global csgoWindow
+    global RCSEnable
+    global noFlashEnable
+
+    processHandle = Process(name="csgo") #find csgo.exe
+    if not processHandle: #uh oh bad handle
+        print("wtf where is csgo. good bye") #oh shit no csgo
+        exit(1)
+
+    print("found csgo, grabbing modules")
+    client = getDLL("client.dll", processHandle.pid) #gets client.dll
+    print("oh yeah yeah got client.dll")
+
+    engine = getDLL("engine.dll", processHandle.pid)
+    print("oh yeah yeah got engine.dll")
+
+    print("alright dude we're all GOOD, press end to exit btw")
+
+    clientState = Address((engine + dwClientState), processHandle).read()# grab clientstate pointer
+    localPlayer = Address((client + dwLocalPlayer), processHandle).read()# grab localplayer pointer
+
+    csgoWindow = win32gui.FindWindow(None, "Counter-Strike: Global Offensive")
+    if csgoWindow is None:
+        print("no csgo window found wtfffffff")
+        exit(1)
+
+    if triggerBotEnable:
+        try:
+            thread.start_new_thread(triggerBot, (processHandle, client, clientState, )) #start trigger function
+
+        except:
+            print("uh oh couldn't start trigger thread((")
+
+
+        if BHOPEnable:
+	        try:
+	            thread.start_new_thread(bhop, (processHandle, client, clientState, localPlayer, )) #start bhop function
+
+	        except:
+	            print("uh oh couldn't start bhop thread((")
+        
+        if RCSEnable:
+            try:
+                thread.start_new_thread(RCS, (processHandle, client, clientState,)) #start rcs function
+            except:
+                print("uh oh couldn't start rcs thread((")
+        
+        if noFlashEnable:
+            try:
+                thread.start_new_thread(noFlash, (processHandle, client, clientState,)) #start noFlash
+            except:
+        	    print("uh oh couldn't start noflash thread((")
+        
+        while not win32api.GetAsyncKeyState(0x23):
+            if Address((clientState + dwClientState), processHandle).read('int') == 6:
+            	junk()
+                if glowESPEnable and win32gui.GetForegroundWindow() == csgoWindow:
+                    glowESP(processHandle, client)
+                sleep(0.01)
+
+        end = True
+        sleep(0.01)
+
 def junk():
     HJISDUF = random.randint(1,1000)
     if HJISDUF < 2:
@@ -211,7 +281,7 @@ def RCS(process, client, clientState):
             
 #aaa i can see now!#
 
-"""
+
 def noFlash(process, client, clientState):
     global end
     global csgoWindow
@@ -221,7 +291,7 @@ flashDur = Address((client + m_fFlashDuration), process).read() #checks if flash
 if flashDur != 0: #if flashed
     sleep(0.01) #sleep cause external memes = lag
     flashAlpha = Address((client + m_fFlashMaxAlpha), process).write(float(0.0)) #set flash alpha to 0
-"""
+
                 
 def getDLL(name, PID):
     hhModule = CreateToolhelp32Snapshot(TH32CS_CLASS.SNAPMODULE, PID)
@@ -239,75 +309,6 @@ def getDLL(name, PID):
 
     return 0
 
-#main stuff now to start threads and does glow shit and etc. men)))
-def main():
-    global triggerBotEnable
-    global BHOPEnable
-    global glowESPEnable
-    global soundESPEnable
-    global end
-    global csgoWindow
-    global RCSEnable
-    global noFlashEnable
-
-    processHandle = Process(name="csgo") #find csgo.exe
-    if not processHandle: #uh oh bad handle
-        print("wtf where is csgo. good bye") #oh shit no csgo
-        exit(1)
-
-    print("found csgo, grabbing modules")
-    client = getDLL("client.dll", processHandle.pid) #gets client.dll
-    print("oh yeah yeah got client.dll")
-
-    engine = getDLL("engine.dll", processHandle.pid)
-    print("oh yeah yeah got engine.dll")
-
-    print("alright dude we're all GOOD, press end to exit btw")
-
-    clientState = Address((engine + dwClientState), processHandle).read()# grab clientstate pointer
-    localPlayer = Address((client + dwLocalPlayer), processHandle).read()# grab localplayer pointer
-
-    csgoWindow = win32gui.FindWindow(None, "Counter-Strike: Global Offensive")
-    if csgoWindow is None:
-        print("no csgo window found wtfffffff")
-        exit(1)
-
-    if triggerBotEnable:
-        try:
-            thread.start_new_thread(triggerBot, (processHandle, client, clientState, )) #start trigger function
-
-        except:
-            print("uh oh couldn't start trigger thread((")
-
-
-        if BHOPEnable:
-	        try:
-	            thread.start_new_thread(bhop, (processHandle, client, clientState, localPlayer, )) #start bhop function
-
-	        except:
-	            print("uh oh couldn't start bhop thread((")
-        
-        if RCSEnable:
-            try:
-                thread.start_new_thread(RCS, (processHandle, client, clientState,)) #start rcs function
-            except:
-                print("uh oh couldn't start rcs thread((")
-        
-        if noFlashEnable:
-            try:
-                thread.start_new_thread(noFlash, (processHandle, client, clientState,)) #start noFlash
-            except:
-        	    print("uh oh couldn't start noflash thread((")
-        
-        while not win32api.GetAsyncKeyState(0x23):
-            if Address((clientState + dwClientState), processHandle).read('int') == 6:
-            	junk()
-                if glowESPEnable and win32gui.GetForegroundWindow() == csgoWindow:
-                    glowESP(processHandle, client)
-                sleep(0.01)
-
-        end = True
-        sleep(0.01)
 
 if __name__ == "__main__":
     main()
