@@ -25,6 +25,22 @@ def main():
         print("wtf where is csgo. good bye") #oh shit no csgo
         exit(1)
 
+    def getDLL(name, PID):
+	    hhModule = CreateToolhelp32Snapshot(TH32CS_CLASS.SNAPMODULE, PID)
+	    if hhModule != None:
+	        module_entry = MODULEENTRY32()
+	        module_entry.dwSize = sizeof(module_entry)
+	        success = Module32First(hhModule, byref(module_entry))
+	        while success:
+	            if module_entry.th32ProcessID == PID:
+	                if module_entry.szModule == name:
+	                    return module_entry.modBaseAddr
+	            success = Module32Next(hhModule, byref(module_entry))
+	        
+	        CloseHandle(hhModule)
+
+	    return 0
+
     print("found csgo, grabbing modules")
     client = getDLL("client.dll", processHandle.pid) #gets client.dll
     print("oh yeah yeah got client.dll")
@@ -280,24 +296,7 @@ def main():
 	            sleep(0.01)
 	            
 	#aaa i can see now!#
-	                
-	def getDLL(name, PID):
-	    hhModule = CreateToolhelp32Snapshot(TH32CS_CLASS.SNAPMODULE, PID)
-	    if hhModule != None:
-	        module_entry = MODULEENTRY32()
-	        module_entry.dwSize = sizeof(module_entry)
-	        success = Module32First(hhModule, byref(module_entry))
-	        while success:
-	            if module_entry.th32ProcessID == PID:
-	                if module_entry.szModule == name:
-	                    return module_entry.modBaseAddr
-	            success = Module32Next(hhModule, byref(module_entry))
-	        
-	        CloseHandle(hhModule)
-
-	    return 0
-
-
+	               
 	def noFlash(process, client, clientState):
 	    global end
 	    global csgoWindow
