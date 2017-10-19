@@ -103,6 +103,20 @@ def main():
         print("no csgo window found wtfffffff")
         exit(1)
 
+    def bhop(process, client, localPlayer, clientState):
+    	fd
+	  	global end
+	  	global csgoWindow
+
+	    while not end:
+	        if win32gui.GetForegroundWindow() == csgoWindow and Address((clientState + dwClientState), processHandle).read('int') == 6:#is localplayer in game???????????
+
+	            flags = Address((localPlayer + m_fFlags), processHandle).read()#grab the uhhh client flags
+	            if flags & (1 << 0) and win32api.GetasyncKeyState(0x20): #is localplayer on the ground and holding space???????
+	                Address((client + dwForceJump), processHandle).write(6, 'int') #jump!
+	            flags = Address((localPlayer + m_fFlags), processHandle).read()#grab those flags again
+	        sleep(0.01)
+
     if triggerBotEnable:
         try:
             thread.start_new_thread(triggerBot, (processHandle, client, clientState)) #start trigger function
