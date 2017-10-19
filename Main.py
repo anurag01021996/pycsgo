@@ -67,8 +67,8 @@ triggerBotKey = 0x18
 triggerBotDelay = 0
 #OPTION VALUES END#
 
-processFound = false
-end = false
+processFound = False
+end = False
 csgoWindow = None
 
 #TRIGGERBOT#
@@ -128,7 +128,7 @@ def glowESP(process, client): #define glowesp
         glowCurPlayer = Address((client + dwEntityList + ((x - 1) * 0x10)), process).read()#grab current entities based on x
 
 
-        if glowCurPlayer = 0x0: #checks if entity is invalid and gay as FUCK
+        if glowCurPlayer == 0x0: #checks if entity is invalid and gay as FUCK
             break #break the loop when found all players
 
         glowCurPlayerDorm = Address((glowCurPlayer + m_bDormant), process)('int') #check if current player is dormant or not
@@ -211,6 +211,7 @@ def RCS(process, client, clientState):
             
 #aaa i can see now!#
 
+"""
 def noFlash(process, client, clientState):
     global end
     global csgoWindow
@@ -219,12 +220,12 @@ flashDur = Address((client + m_fFlashDuration), process).read() #checks if flash
 
 if flashDur != 0: #if flashed
     sleep(0.01) #sleep cause external memes = lag
-    flashAlpha = Address((client + m_fFlashMaxAlpha), process).write(0.0f, 'float') #set flash alpha to 0
-
+    flashAlpha = Address((client + m_fFlashMaxAlpha), process).write(float(0.0)) #set flash alpha to 0
+"""
                 
 def getDLL(name, PID):
     hhModule = CreateToolhelp32Snapshot(TH32CS_CLASS.SNAPMODULE, PID)
-    if hhModule not None:
+    if hhModule != None:
         module_entry = MODULEENTRY32()
         module_entry.dwSize = sizeof(module_entry)
         success = Module32First(hhModule, byref(module_entry))
@@ -280,11 +281,11 @@ def main():
 
 
         if BHOPEnable:
-        try:
-            thread.start_new_thread(bhop, (processHandle, client, clientState, localPlayer, )) #start bhop function
+	        try:
+	            thread.start_new_thread(bhop, (processHandle, client, clientState, localPlayer, )) #start bhop function
 
-        except:
-            print("uh oh couldn't start bhop thread((")
+	        except:
+	            print("uh oh couldn't start bhop thread((")
         
         if RCSEnable:
             try:
@@ -295,12 +296,12 @@ def main():
         if noFlashEnable:
             try:
                 thread.start_new_thread(noFlash, (processHandle, client, clientState,)) #start noFlash
-               except:
-                print("uh oh couldn't start noflash thread((")
+            except:
+        	    print("uh oh couldn't start noflash thread((")
         
         while not win32api.GetAsyncKeyState(0x23):
             if Address((clientState + dwClientState), processHandle).read('int') == 6:
-            junk()
+            	junk()
                 if glowESPEnable and win32gui.GetForegroundWindow() == csgoWindow:
                     glowESP(processHandle, client)
                 sleep(0.01)
@@ -308,5 +309,5 @@ def main():
         end = True
         sleep(0.01)
 
-if __name__ == "__main__"
+if __name__ == "__main__":
     main()

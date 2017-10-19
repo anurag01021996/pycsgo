@@ -86,7 +86,7 @@ def hex_dump(data, addr = 0, prefix = '', ftype = 'bytes'):
     """
    function originally from pydbg, modified to display other types
    """
-   junk()
+    junk()
     dump = prefix
     slice = ''
     if ftype != 'bytes':
