@@ -285,7 +285,7 @@ def RCS(process, client, clientState):
 def noFlash(process, client, clientState):
     global end
     global csgoWindow
-localPlayer = Address((client + dwLocalPlayer), process).read() #checks for localplayer
+localPlayer = Address((main.client + dwLocalPlayer), process).read() #checks for localplayer
 flashDur = Address((client + m_fFlashDuration), process).read() #checks if flashed
 
 if flashDur != 0: #if flashed
