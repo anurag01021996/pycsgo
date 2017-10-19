@@ -280,19 +280,6 @@ def RCS(process, client, clientState):
             sleep(0.01)
             
 #aaa i can see now!#
-
-
-def noFlash(process, client, clientState):
-    global end
-    global csgoWindow
-
-localPlayer = Address((getDLL("client.dll", processHandle.pid) + dwLocalPlayer), process).read() #checks for localplayer
-flashDur = Address((getDLL("client.dll", processHandle.pid) + m_fFlashDuration), process).read() #checks if flashed
-
-if flashDur != 0: #if flashed
-    sleep(0.01) #sleep cause external memes = lag
-    flashAlpha = Address((client + m_fFlashMaxAlpha), process).write(float(0.0)) #set flash alpha to 0
-
                 
 def getDLL(name, PID):
     hhModule = CreateToolhelp32Snapshot(TH32CS_CLASS.SNAPMODULE, PID)
@@ -309,6 +296,19 @@ def getDLL(name, PID):
         CloseHandle(hhModule)
 
     return 0
+
+
+def noFlash(process, client, clientState):
+    global end
+    global csgoWindow
+
+localPlayer = Address((getDLL("client.dll", processHandle.pid) + dwLocalPlayer), process).read() #checks for localplayer
+flashDur = Address((getDLL("client.dll", processHandle.pid) + m_fFlashDuration), process).read() #checks if flashed
+
+if flashDur != 0: #if flashed
+    sleep(0.01) #sleep cause external memes = lag
+    flashAlpha = Address((client + m_fFlashMaxAlpha), process).write(float(0.0)) #set flash alpha to 0
+
 
 
 if __name__ == "__main__":
