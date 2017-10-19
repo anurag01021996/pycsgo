@@ -28,9 +28,9 @@ def junk():
     ghcjs = idufoioadsff * IDSgasdf
 
 # OFFSET START #
-m_iCrosshairID = 0xB294
-dwForceAttack = 0x2ECF3DC
-dwForceJump = 0x4F23F08
+m_iCrosshairID = 0xB2A4
+dwForceAttack = 0x2ECF53C
+dwForceJump = 0x4F2406C
 dwClientState = 0x5A5344
 dwClientState_ViewAngles = 0x4D10
 m_aimPunchAngle = 0x301C
@@ -40,11 +40,11 @@ m_iShotsFired = 0xA2C0
 m_flFlashMaxAlpha = 0xA2F4
 m_flFlashDuration = 0xA2F8
  
-dwEntityList = 0x4A8D05C
-dwClientState_GetLocalPlayer = 0x178
-dwLocalPlayer = 0xAAFC3C
+dwEntityList = 0x4A8D1BC
+dwClientState_GetLocalPlayer = 0x180
+dwLocalPlayer = 0xAAFD7C
 dwGlowObjectManager = 0x4FA9AA8
-m_iGlowIndex = 0xA320
+m_iGlowIndex = 0xA310
 m_iTeamNum = 0xF0
 m_bDormant = 0xE9
 m_iHealth = 0xFC
