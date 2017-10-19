@@ -28,7 +28,7 @@ def main():
         exit(1)
 
     print("found csgo, grabbing modules")
-    client = getDLL("client.dll", processHandle.pid) #gets client.dll
+    clientDLL = getDLL("client.dll", processHandle.pid) #gets client.dll
     print("oh yeah yeah got client.dll")
 
     engine = getDLL("engine.dll", processHandle.pid)
